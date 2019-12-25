@@ -68,7 +68,7 @@ class ResponseParser:
         return self.response[3]
 
 
-class LinuxTool(Logger):
+class Plinux(Logger):
     """Base class to work with linux"""
 
     _URL = 'https://confluence.starwind.com:8444/display/QA/LinuxTool'
@@ -89,11 +89,12 @@ class LinuxTool(Logger):
                f'Password: {self.password}\n' \
                f'Host availability: {self.is_host_available()}\n' \
                f'Credentials are correct: {self.is_credentials_valid()}\n\n' \
-               f'RTFM: {LinuxTool._URL}\n'
+               f'RTFM: {Plinux._URL}\n'
 
     def is_host_available(self, port: int = 0, timeout: int = 5):
         """Check remote host is available using specified port"""
 
+        # return self._client().get_transport().is_active()
         port_ = port or self.port
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.settimeout(timeout)
@@ -537,7 +538,7 @@ class LinuxTool(Logger):
         self.logger.info(f'Password: {self.password}')
         self.logger.info(f'Available: {self.is_host_available()}')
         self.logger.info(f'Available: {self.is_host_available()}')
-        self.logger.info(f'RTFM: {LinuxTool._URL}')
+        self.logger.info(f'RTFM: {Plinux._URL}')
 
     # Aliases
     ps = get_processes
