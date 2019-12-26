@@ -6,7 +6,7 @@ Plinux based on paramiko project. It can establish ssh connection to a remote se
 
 ## Installation
 For most users, the recommended method to install is via pip:
-```
+```cmd
 pip install plinux
 ```
 ## Import
@@ -16,7 +16,7 @@ from plinux import Plinux
 ---
 ## Usage
 #### Command from usual user:
-```pydocstring
+```python
 from plinux import Plinux
 
 client = Plinux(host="172.16.0.124", username="bobby", password="qawsedrf")
@@ -26,7 +26,7 @@ print(response.ok)  # True
 ```
 
 #### Command using sudo:
-```pydocstring
+```python
 from plinux import Plinux
 
 client = Plinux(host="172.16.0.124", username="bobby", password="qawsedrf", logger_enabled=True)
