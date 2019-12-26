@@ -9,12 +9,37 @@ For most users, the recommended method to install is via pip:
 ```
 pip install plinux
 ```
-
-## Usage
-
+## Import
+```python
+from plinux import Plinux
 ```
-client = Plinux(host='172.16.0.124', username='bobby', password='qawsedrf')
-response = client.run_cmd('hostname')
+---
+## Usage
+#### Command from usual user:
+```pydocstring
+from plinux import Plinux
+
+client = Plinux(host="172.16.0.124", username="bobby", password="qawsedrf")
+response = client.run_cmd("hostname")
 print(response.stdout)  # WebServer
 print(response.ok)  # True
 ```
+
+#### Command using sudo:
+```pydocstring
+from plinux import Plinux
+
+client = Plinux(host="172.16.0.124", username="bobby", password="qawsedrf", logger_enabled=True)
+response = client.run_cmd("systemctl stop myservicename.service", sudo=True)
+
+print(response)  # ResponseParser(response=(0, None, None, "sudo -S -p '' -- sh -c 'systemctl stop myservicename.service'"))
+print(response.command)  # sudo -S -p '' -- sh -c 'systemctl stop myservicename.service'
+print(response.exited)  # 0
+```
+
+#### Aliases
+Some methods have "human commands" and aliases:
+
+* client.run_cmd("ls /home/bobby")
+* client.list_dir("/home/bobby")
+* client.ls("/home/bobby")
