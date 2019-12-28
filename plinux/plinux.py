@@ -72,7 +72,13 @@ class Plinux(Logger):
     """Base class to work with linux"""
 
     def __init__(
-            self, host, username, password, port: int = 22, logger_enabled: bool = True, *args, **kwargs):
+            self,
+            host,
+            username,
+            password,
+            port: int = 22,
+            logger_enabled: bool = True,
+            *args, **kwargs):
         super().__init__(name=self.__class__.__name__, *args, **kwargs)
         self.host = host
         self.port = port
@@ -86,7 +92,7 @@ class Plinux(Logger):
                f'Username: {self.username}\n' \
                f'Password: {self.password}\n' \
                f'Host availability: {self.is_host_available()}\n' \
-               f'Credentials are correct: {self.is_credentials_valid()}\n\n'
+               f'Credentials are correct: {self.is_credentials_valid()}'
 
     def is_host_available(self, port: int = 0, timeout: int = 5):
         """Check remote host is available using specified port"""
