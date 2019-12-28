@@ -71,8 +71,6 @@ class ResponseParser:
 class Plinux(Logger):
     """Base class to work with linux"""
 
-    _URL = 'https://confluence.starwind.com:8444/display/QA/LinuxTool'
-
     def __init__(
             self, host, username, password, port: int = 22, logger_enabled: bool = True, *args, **kwargs):
         super().__init__(name=self.__class__.__name__, *args, **kwargs)
@@ -88,8 +86,7 @@ class Plinux(Logger):
                f'Username: {self.username}\n' \
                f'Password: {self.password}\n' \
                f'Host availability: {self.is_host_available()}\n' \
-               f'Credentials are correct: {self.is_credentials_valid()}\n\n' \
-               f'RTFM: {Plinux._URL}\n'
+               f'Credentials are correct: {self.is_credentials_valid()}\n\n'
 
     def is_host_available(self, port: int = 0, timeout: int = 5):
         """Check remote host is available using specified port"""
@@ -538,7 +535,6 @@ class Plinux(Logger):
         self.logger.info(f'Password: {self.password}')
         self.logger.info(f'Available: {self.is_host_available()}')
         self.logger.info(f'Available: {self.is_host_available()}')
-        self.logger.info(f'RTFM: {Plinux._URL}')
 
     # Aliases
     ps = get_processes
