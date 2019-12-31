@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/agegemon/plinux.svg?branch=master)](https://travis-ci.org/agegemon/plinux)
+
 # Plinux
 
 Cross-platform tool to work with remote Linux OS.
