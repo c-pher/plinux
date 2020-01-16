@@ -71,14 +71,16 @@ class ResponseParser:
 class Plinux(Logger):
     """Base class to work with linux"""
 
-    def __init__(
-            self,
-            host,
-            username,
-            password,
-            port: int = 22,
-            logger_enabled: bool = True,
-            *args, **kwargs):
+    def __init__(self,
+                 host: str,
+                 username: str,
+                 password: str,
+                 port: int = 22,
+                 logger_enabled: bool = True,
+                 *args,
+                 **kwargs):
+        """Create a client object to work with linux host"""
+
         super().__init__(name=self.__class__.__name__, *args, **kwargs)
         self.host = host
         self.port = port
@@ -108,7 +110,7 @@ class Plinux(Logger):
         """Returns all available public methods"""
         return [method for method in dir(self) if not method.startswith('_')]
 
-    def run_cmd_local(self, cmd, timeout=60):
+    def run_cmd_local(self, cmd: str, timeout=60):
         """Main function to send commands using subprocess
 
         :param cmd: string, command
@@ -251,7 +253,7 @@ class Plinux(Logger):
         return self.run_cmd('hostname')
 
     # FIXME
-    def change_hostname(self, name):
+    def change_hostname(self, name: str):
         cmd = f'{self.__sudo_cmd} -- sh -c "echo {name} > /etc/hostname; hostname -F /etc/hostname"'
         self.run_cmd(cmd)
         cmd = f"""{self.__sudo_cmd} -- sh -c 
@@ -262,28 +264,28 @@ class Plinux(Logger):
         return self.run_cmd('date')
 
     # ---------- Service management ----------
-    def get_service(self, name):
+    def get_service(self, name: str):
         """Get whole service info"""
 
         return self.run_cmd(f'systemctl status {name}')
 
-    def get_service_status(self, name):
+    def get_service_status(self, name: str):
         """Get service status"""
         return self.run_cmd(f'systemctl is-active {name}')
 
-    def stop_service(self, name):
+    def stop_service(self, name: str):
         return self.run_cmd(f'systemctl stop {name}', sudo=True)
 
-    def kill_service(self, name):
+    def kill_service(self, name: str):
         return self.run_cmd(f'systemctl kill {name}', sudo=True)
 
-    def start_service(self, name):
+    def start_service(self, name: str):
         return self.run_cmd(f'systemctl start {name}', sudo=True)
 
-    def restart_service(self, name):
+    def restart_service(self, name: str):
         return self.run_cmd(f'systemctl restart {name}', sudo=True)
 
-    def get_service_journal(self, name):
+    def get_service_journal(self, name: str):
         return self.run_cmd(f'journalctl -u {name}', sudo=True)
 
     def list_active_services(self, no_legend: bool = True, all_services: bool = False):
@@ -302,16 +304,16 @@ class Plinux(Logger):
             cmd += ' --all'
         return self.run_cmd(cmd)
 
-    def enable(self, name):
+    def enable(self, name: str):
         return self.run_cmd(f'systemctl enable {name}', sudo=True)
 
-    def disable(self, name):
+    def disable(self, name: str):
         return self.run_cmd(f'systemctl disable {name}', sudo=True)
 
-    def is_enabled(self, name):
+    def is_enabled(self, name: str):
         return self.run_cmd(f'systemctl is-enabled {name}')
 
-    def get_netstat_info(self, params=''):
+    def get_netstat_info(self, params: str = ''):
         """Get netstat info
 
         Necessary to install net-tool: "yum -y install net-tools"
@@ -324,7 +326,7 @@ class Plinux(Logger):
         return self.run_cmd(cmd_)
 
     # ----------- File and directory management ----------
-    def check_exists(self, path):
+    def check_exists(self, path: str) -> bool:
         r"""Check file and directory exists.
 
         For windows path: specify network path in row format or use escape symbol.
@@ -332,10 +334,10 @@ class Plinux(Logger):
         Usage: check_exists('\\\\172.16.0.25\\d$\\New Text Document.txt')
 
         For linux path: linux style path.
-        Usage: check_exists('/home/veeam/WebConsole_891_441_1003_2_0_2416.zip')
+        Usage: check_exists('/home/user/test.txt')
 
         :param path: Full path to file/directory
-        :return: Bool
+        :return:
         """
 
         # Linux
@@ -348,10 +350,10 @@ class Plinux(Logger):
             return os.path.exists(path)
         raise SyntaxError('Incorrect method usage. Check specified path.')
 
-    def cat_file(self, path):
+    def cat_file(self, path: str):
         return self.run_cmd(f'cat {path}')
 
-    def get_json(self, path, pprint: bool = False) -> dict:
+    def get_json(self, path: str, pprint: bool = False) -> dict:
         """Read JSON file as string and pretty print it into console"""
 
         file = self.cat_file(path)
@@ -360,13 +362,13 @@ class Plinux(Logger):
             print(json.dumps(jsoned, indent=4), sep='')
         return jsoned
 
-    def create_file(self, path):
+    def create_file(self, path: str):
         return self.run_cmd(f'touch {path}', sudo=True)
 
-    def get_file_permissions(self, path):
+    def get_file_permissions(self, path: str):
         return self.run_cmd(f'stat -c "%A" {path}')
 
-    def get_file_size(self, path):
+    def get_file_size(self, path: str):
         """Get file size
 
         :param path: File path
@@ -375,7 +377,7 @@ class Plinux(Logger):
 
         return self.run_cmd(f'stat -c "%s" {path}')
 
-    def grep_line_in_file(self, path, string, directory: bool = False):
+    def grep_line_in_file(self, path: str, string: str, directory: bool = False):
         """Grep line in file or directory
 
         :param path: File/directory path
@@ -388,7 +390,7 @@ class Plinux(Logger):
             return self.run_cmd(f'grep -rn "{string}" {path}')
         return self.run_cmd(f'grep -n "{string}" {path}')
 
-    def change_line_in_file(self, path, old, new):
+    def change_line_in_file(self, path: str, old: str, new: str):
         """Replace line and save file.
 
         :param path: File path
@@ -399,10 +401,10 @@ class Plinux(Logger):
 
         return self.run_cmd(f'sed -i "s!{old}!{new}!" {path}', sudo=True)
 
-    def delete_line_from_file(self, path, string):
+    def delete_line_from_file(self, path: str, string: str):
         return self.run_cmd(f"sed -i '/{string}/d' {path}", sudo=True)
 
-    def get_last_file(self, directory='', name=''):
+    def get_last_file(self, directory: str = '', name: str = ''):
         """Get last modified file in a directory
 
         :param name: Filename to grep
@@ -414,7 +416,7 @@ class Plinux(Logger):
         cmd = f'ls {directory_} -Art| grep {name} | tail -n 1' if name else f'ls {directory} -Art | tail -n 1'
         return self.run_cmd(cmd)
 
-    def remove(self, path):
+    def remove(self, path: str):
         """Remove file(s) and directories
 
         Usage:\n
@@ -427,7 +429,7 @@ class Plinux(Logger):
 
         return self.run_cmd(f'for file in {path}; do rm -rf "$file"; done', sudo=True)
 
-    def extract_files(self, src, dst, mode='tar', quite=True):
+    def extract_files(self, src: str, dst: str, mode: str = 'tar', quite: bool = True):
         """Extract file to specified directory
 
         :param src: Full path to archive (with extension)
@@ -444,7 +446,7 @@ class Plinux(Logger):
 
         return self.run_cmd(cmd)
 
-    def copy_file(self, src, dst):
+    def copy_file(self, src: str, dst: str):
         """
 
         :param src:
@@ -465,10 +467,10 @@ class Plinux(Logger):
         return self.run_cmd('shutdown -h now', True)
 
     #  ----------- Directory management -----------
-    def create_directory(self, path):
+    def create_directory(self, path: str):
         return self.run_cmd(f'mkdir {path}', sudo=True)
 
-    def list_dir(self, path, params=None):
+    def list_dir(self, path: str, params=None):
         """List directory
 
         :param path: Directory path
@@ -479,11 +481,11 @@ class Plinux(Logger):
         cmd = f'ls {path} -{params}' if params else f'ls {path}'
         return self.run_cmd(cmd)
 
-    def count_files(self, path):
+    def count_files(self, path: str):
         return self.run_cmd(f'ls {path} | wc -l')
 
     #  ----------- File transfer -----------
-    def upload(self, local, remote):
+    def upload(self, local: str, remote: str):
         r"""Upload file/dir to the host and check exists after.
 
         Usage: tool.upload(r'd:\python_tutorial.pdf', '/home/user/python_tutorial.pdf'')
@@ -497,7 +499,7 @@ class Plinux(Logger):
         self.logger.info(f'Uploaded {local} to {remote}')
         return self.exists(remote)
 
-    def download(self, remote, local) -> bool:
+    def download(self, remote: str, local: str) -> bool:
         r"""Download a file from the current connection to the local filesystem and check exists after.
 
         Usage: tool.download('/home/user/python_tutorial.pdf', 'd:\dust\python_tutorial.pdf')
@@ -511,7 +513,7 @@ class Plinux(Logger):
         self.logger.info(f'Downloaded {remote} to {local}')
         return self.exists(local)
 
-    def change_password(self, new_password):
+    def change_password(self, new_password: str):
         """Change password
 
         BEWARE USING! You'll lost connection to a server after completion.
