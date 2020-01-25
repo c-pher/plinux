@@ -273,6 +273,9 @@ class Plinux(Logger):
         """Get service status"""
         return self.run_cmd(f'systemctl is-active {name}')
 
+    def is_service_active(self, name: str):
+        return True if self.get_service_status(name) == 'active' else False
+
     def stop_service(self, name: str):
         return self.run_cmd(f'systemctl stop {name}', sudo=True)
 
