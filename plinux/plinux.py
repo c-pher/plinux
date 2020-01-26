@@ -10,35 +10,23 @@ from typing import Any
 
 from paramiko import SSHClient, ssh_exception, AutoAddPolicy
 
-warnings.filterwarnings(action='ignore', module='.*paramiko.*')
+logger_name = 'Plinux'
+logger = logging.getLogger(logger_name)
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter(fmt='%(asctime)-15s | %(levelname)s | %(name)s | %(message)s',
+                              datefmt='%Y-%m-%d %H:%M:%S')
 
+# Console logger
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+ch.setFormatter(formatter)
+logger.addHandler(ch)
 
-@dataclass
-class Logger:
-    name: str
-    console: bool = True
-    file: bool = False
-    date_format: str = '%Y-%m-%d %H:%M:%S'
-    format: str = '%(asctime)-15s [%(name)s] [LINE:%(lineno)d] [%(levelname)s] %(message)s'
-
-    def __post_init__(self):
-        self.logger = logging.getLogger(self.name)
-        self.logger.setLevel(logging.INFO)
-        self.formatter = logging.Formatter(fmt=self.format, datefmt=self.date_format)
-
-        # Console handler with a INFO log level
-        if self.console:
-            ch = logging.StreamHandler()  # use param stream=sys.stdout for stdout printing
-            ch.setLevel(logging.INFO)
-            ch.setFormatter(self.formatter)  # Add the formatter
-            self.logger.addHandler(ch)  # Add the handlers to the logger
-
-        # File handler which logs debug messages
-        if self.file:
-            fh = logging.FileHandler(f'{self.name}.log', mode='w')
-            fh.setLevel(logging.DEBUG)
-            fh.setFormatter(self.formatter)  # Add the formatter
-            self.logger.addHandler(fh)  # Add the handlers to the logger
+# File logger
+fh = logging.FileHandler(f'{logger_name}.log', mode='w')
+fh.setLevel(logging.DEBUG)
+fh.setFormatter(formatter)  # Add the formatter
+logger.addHandler(fh)  # Add the handlers to the logger
 
 
 @dataclass()
@@ -68,7 +56,7 @@ class ResponseParser:
         return self.response[3]
 
 
-class Plinux(Logger):
+class Plinux:
     """Base class to work with linux"""
 
     def __init__(self,
@@ -76,17 +64,14 @@ class Plinux(Logger):
                  username: str,
                  password: str,
                  port: int = 22,
-                 logger_enabled: bool = True,
-                 *args,
-                 **kwargs):
+                 logger_enabled: bool = True):
         """Create a client object to work with linux host"""
 
-        super().__init__(name=self.__class__.__name__, *args, **kwargs)
         self.host = host
         self.port = port
         self.username = username
         self.password = password
-        self.logger.disabled = not logger_enabled
+        logger.disabled = not logger_enabled
 
     def __str__(self):
         return f'Local host: {self.get_current_os_name()}\n' \
@@ -110,7 +95,8 @@ class Plinux(Logger):
         """Returns all available public methods"""
         return [method for method in dir(self) if not method.startswith('_')]
 
-    def run_cmd_local(self, cmd: str, timeout=60):
+    @staticmethod
+    def run_cmd_local(cmd: str, timeout=60):
         """Main function to send commands using subprocess
 
         :param cmd: string, command
@@ -122,10 +108,10 @@ class Plinux(Logger):
         with Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE) as process:
             # process.wait(timeout)
             try:
-                self.logger.info(f'COMMAND: "{cmd}"')
+                logger.info(f'COMMAND: "{cmd}"')
                 stdout, stderr = process.communicate(timeout=timeout)
                 data = (stdout + stderr).decode().strip()
-                self.logger.info(f'RESULT: "{data}"')
+                logger.info(f'RESULT: "{data}"')
                 return data
             except TimeoutExpired:
                 process.kill()
@@ -146,13 +132,13 @@ class Plinux(Logger):
                 return client.open_sftp()
             return client
         except ssh_exception.AuthenticationException as e:
-            self.logger.error(e.args)
+            logger.error(e.args)
             raise ssh_exception.AuthenticationException
         except ssh_exception.NoValidConnectionsError as e:
-            self.logger.error(e.strerror)
+            logger.error(e.strerror)
             raise ssh_exception.NoValidConnectionsError
         except TimeoutError as e:
-            self.logger.error('Timeout exceeded.' + e.strerror)
+            logger.error('Timeout exceeded.' + e.strerror)
             raise TimeoutError
 
     def run_cmd(self, cmd: str, sudo: bool = False, timeout: int = 30) -> ResponseParser:
@@ -168,7 +154,7 @@ class Plinux(Logger):
 
         try:
             command = f"sudo -S -p '' -- sh -c '{cmd}'" if sudo else cmd
-            self.logger.info(command)
+            logger.info(command)
 
             stdin, stdout, stderr = client.exec_command(command, timeout=timeout)
 
@@ -182,13 +168,13 @@ class Plinux(Logger):
             # Get STDOUT
             stdout = stdout.read().decode().strip()
             out = stdout if stdout else None
-            self.logger.info(f'{exited}: {out}')
+            logger.info(f'{exited}: {out}')
 
             # Get STDERR
             stderr = stderr.read().decode().strip()
             err = stderr if stderr else None
             if err:
-                self.logger.error(err)
+                logger.error(err)
 
             response = exited, out, err, command
             return ResponseParser(response)
@@ -218,12 +204,12 @@ class Plinux(Logger):
         try:
             cmd_ = f'sudo -S <<< "{self.password}" {cmd}' if sudo else cmd
 
-            self.logger.info(f'[{self.host}] [{self.username}@{self.password}] "{cmd_}"')
+            logger.info(f'[{self.host}] [{self.username}@{self.password}] "{cmd_}"')
 
             stdin, stdout, stderr = client.exec_command(cmd_)
             data = (stdout.read() + stderr.read()).decode().strip()
 
-            self.logger.info(f'[RESULT] "{data}"')
+            logger.info(f'[RESULT] "{data}"')
 
             # pretty print - remove sudo prompt
             sudo_prompt = '[sudo] password for user:'
@@ -499,7 +485,7 @@ class Plinux(Logger):
         """
 
         self._client(sftp=True).put(local, remote, confirm=True)
-        self.logger.info(f'Uploaded {local} to {remote}')
+        logger.info(f'Uploaded {local} to {remote}')
         return self.exists(remote)
 
     def download(self, remote: str, local: str) -> bool:
@@ -513,7 +499,7 @@ class Plinux(Logger):
         """
 
         self._client(sftp=True).get(remote, local)
-        self.logger.info(f'Downloaded {remote} to {local}')
+        logger.info(f'Downloaded {remote} to {local}')
         return self.exists(local)
 
     def change_password(self, new_password: str):
@@ -539,13 +525,13 @@ class Plinux(Logger):
     def debug_info(self):
         """Show debug log. Logger must be enabled"""
 
-        self.logger.info('Linux client created.')
-        self.logger.info(f'Local host: {self.get_current_os_name()}')
-        self.logger.info(f'Remote IP: {self.host}')
-        self.logger.info(f'Username: {self.username}')
-        self.logger.info(f'Password: {self.password}')
-        self.logger.info(f'Available: {self.is_host_available()}')
-        self.logger.info(f'Available: {self.is_host_available()}')
+        logger.info('Linux client created.')
+        logger.info(f'Local host: {self.get_current_os_name()}')
+        logger.info(f'Remote IP: {self.host}')
+        logger.info(f'Username: {self.username}')
+        logger.info(f'Password: {self.password}')
+        logger.info(f'Available: {self.is_host_available()}')
+        logger.info(f'Available: {self.is_host_available()}')
 
     # Aliases
     ps = get_processes

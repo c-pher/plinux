@@ -45,3 +45,9 @@ Some methods have "human commands" and aliases:
 * client.run_cmd("ls /home/bobby")
 * client.list_dir("/home/bobby")
 * client.ls("/home/bobby")
+
+---
+
+## Changelog
+##### 1.0.5 (26.01.2020)
+- logging refactored to avoid multiple log entries
