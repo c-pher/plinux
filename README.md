@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/agegemon/plinux.svg?branch=master)](https://travis-ci.org/agegemon/plinux)
+[![PyPI version](https://badge.fury.io/py/plinux.svg)](https://badge.fury.io/py/plinux)
+[![Build Status](https://travis-ci.org/c-pher/plinux.svg?branch=master)](https://travis-ci.org/c-pher/plinux)
 
 # Plinux
 
@@ -49,5 +50,8 @@ Some methods have "human commands" and aliases:
 ---
 
 ## Changelog
+##### 1.0.6 (29.01.2020)
+- kill_user_session method added
+
 ##### 1.0.5 (26.01.2020)
 - logging refactored to avoid multiple log entries

@@ -533,6 +533,17 @@ class Plinux:
         logger.info(f'Available: {self.is_host_available()}')
         logger.info(f'Available: {self.is_host_available()}')
 
+    # ---------- User management ----------
+    def kill_user_session(self, name: str):
+        """
+        Kill all user's ssh session and processes
+
+        :param name: user name
+        :return:
+        """
+
+        return self.run_cmd(f'pkill -9 -u {name}', sudo=True)
+
     # Aliases
     ps = get_processes
     ls = list_dir
