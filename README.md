@@ -50,6 +50,14 @@ Some methods have "human commands" and aliases:
 ---
 
 ## Changelog
+##### 1.0.7 (30.01.2020)
+- ResponseParser methods notation changed.
+    - stdout -> str
+    - stderr -> str
+    - exited -> int
+    - ok -> bool
+    - command -> str
+
 ##### 1.0.6 (29.01.2020)
 - kill_user_session method added
 

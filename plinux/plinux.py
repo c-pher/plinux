@@ -36,23 +36,23 @@ class ResponseParser:
     response: Any
 
     @property
-    def stdout(self) -> list:
+    def stdout(self) -> str:
         return self.response[1]
 
     @property
-    def stderr(self) -> list:
+    def stderr(self) -> str:
         return self.response[2]
 
     @property
     def exited(self) -> int:
-        return self.response[0]
+        return int(self.response[0])
 
     @property
-    def ok(self):
+    def ok(self) -> bool:
         return self.response[0] == 0
 
     @property
-    def command(self):
+    def command(self) -> str:
         return self.response[3]
 
 
