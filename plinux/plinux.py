@@ -354,8 +354,16 @@ class Plinux:
     def create_file(self, path: str):
         return self.run_cmd(f'touch {path}', sudo=True)
 
-    def get_file_permissions(self, path: str):
-        return self.run_cmd(f'stat -c "%A" {path}')
+    def get_file_permissions(self, path: str, human: bool = False):
+        """Display file or file system status.
+
+        :param path: File path
+        :param human: Access rights in human readable form otherwise in in octal
+        :return:
+        """
+
+        cmd = f'stat -c %A {path}' if human else f'stat -c %a {path}'
+        return self.run_cmd(cmd)
 
     def get_file_size(self, path: str):
         """Get file size
@@ -560,3 +568,4 @@ class Plinux:
     rm = remove
     chpasswd = change_password
     count = count_files
+    stat = get_file_permissions

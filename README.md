@@ -50,6 +50,12 @@ Some methods have "human commands" and aliases:
 ---
 
 ## Changelog
+##### 1.0.8 (06.02.2020)
+get_file_permission extended:
+- added faq
+- added "human=False" param returns access rights in human readable form otherwise in in octal
+- added alias "stat"
+
 ##### 1.0.7 (30.01.2020)
 - ResponseParser methods notation changed.
     - stdout -> str
