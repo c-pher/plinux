@@ -50,6 +50,9 @@ Some methods have "human commands" and aliases:
 ---
 
 ## Changelog
+##### 1.0.9 (28.02.2020)
+Log filehandler writes in utf8 from now
+
 ##### 1.0.8 (06.02.2020)
 get_file_permission extended:
 - added faq

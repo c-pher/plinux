@@ -23,7 +23,7 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 # File logger
-fh = logging.FileHandler(f'{logger_name}.log', mode='w')
+fh = logging.FileHandler(f'{logger_name}.log', mode='w', encoding='utf8')
 fh.setLevel(logging.DEBUG)
 fh.setFormatter(formatter)  # Add the formatter
 logger.addHandler(fh)  # Add the handlers to the logger
