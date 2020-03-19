@@ -55,6 +55,9 @@ class ResponseParser:
     def command(self) -> str:
         return self.response[3]
 
+    def json(self):
+        return json.loads(self.stdout)
+
 
 class Plinux:
     """Base class to work with linux"""

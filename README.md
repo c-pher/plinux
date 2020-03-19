@@ -50,6 +50,10 @@ Some methods have "human commands" and aliases:
 ---
 
 ## Changelog
+##### 1.1.0 (19.03.2020)
+ResponseParser extended with json()
+
+
 ##### 1.0.9 (28.02.2020)
 Log filehandler writes in utf8 from now
 
