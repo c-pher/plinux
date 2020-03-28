@@ -447,14 +447,27 @@ class Plinux:
         return self.run_cmd(cmd)
 
     def copy_file(self, src: str, dst: str):
-        """
+        """Copy file to another location
 
-        :param src:
-        :param dst:
+        :param src: Source full path
+        :param dst: Destination
         :return:
         """
 
         return self.run_cmd(f'cp {src} {dst}', sudo=True)
+
+    def get_md5(self, path: str, raw: bool = False):
+        """
+        Get file md5
+
+        :param path: File path
+        :param raw: Return md5 sum only (not Rseponse object)
+        """
+
+        result = self.run_cmd(f'md5sum {path}').stdout
+        if raw:
+            return result.split(path)[0].strip()
+        return result
 
     def get_processes(self):
         return self.run_cmd(f'ps -aux')
@@ -572,3 +585,4 @@ class Plinux:
     chpasswd = change_password
     count = count_files
     stat = get_file_permissions
+    md5 = get_md5
