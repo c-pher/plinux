@@ -50,6 +50,11 @@ Some methods have "human commands" and aliases:
 ---
 
 ## Changelog
+##### 1.1.2 (25.04.2020)
+- send_cmd deprecated
+- fix password prompt in stderr
+
+
 ##### 1.1.1 (29.03.2020)
 get_md5 method added
 

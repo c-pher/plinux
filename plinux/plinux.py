@@ -3,7 +3,6 @@ import logging
 import os
 import platform
 import socket
-import warnings
 from dataclasses import dataclass
 from subprocess import Popen, PIPE, TimeoutExpired
 from typing import Any
@@ -176,6 +175,11 @@ class Plinux:
 
             # Get STDERR
             stderr = stderr.read().decode().strip()
+
+            # Clear stderr if password prompt detected
+            if '[sudo] password for' in stderr:
+                stderr = None
+
             err = stderr if stderr else None
             if err:
                 logger.error(err)
@@ -192,39 +196,6 @@ class Plinux:
     @property
     def __sudo_cmd(self):
         return f'sudo -S <<< {self.password}'
-
-    def send_cmd(self, cmd: str, sudo: bool = False):
-        """Base method to execute SSH command on remote server
-
-        :param cmd: SSH command
-        :param sudo: Execute specified command as sudo user
-        :return: Decoded command result
-        """
-
-        warnings.warn('"send_cmd" is deprecated and will be removed. Use "run_cmd" method instead', DeprecationWarning)
-
-        client = self._client()
-
-        try:
-            cmd_ = f'sudo -S <<< "{self.password}" {cmd}' if sudo else cmd
-
-            logger.info(f'[{self.host}] [{self.username}@{self.password}] "{cmd_}"')
-
-            stdin, stdout, stderr = client.exec_command(cmd_)
-            data = (stdout.read() + stderr.read()).decode().strip()
-
-            logger.info(f'[RESULT] "{data}"')
-
-            # pretty print - remove sudo prompt
-            sudo_prompt = '[sudo] password for user:'
-            if sudo_prompt in data:
-                if sudo_prompt == data:
-                    return None
-                return data.split('[sudo] password for user: ')[1]
-
-            return data
-        finally:
-            client.close()
 
     def is_credentials_valid(self):
         try:
