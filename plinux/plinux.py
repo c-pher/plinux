@@ -270,7 +270,7 @@ class Plinux:
     def is_enabled(self, name: str):
         return self.run_cmd(f'systemctl is-enabled {name}')
 
-    def get_pid(self, name: str):
+    def get_pid(self, name: str) -> int:
         """Get process pid
 
         :param name: Process name
