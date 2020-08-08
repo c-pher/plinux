@@ -22,13 +22,6 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
-# File logger
-# fh = logging.FileHandler(f'{logger_name}.log', mode='w', encoding='utf8')
-# fh.setLevel(logging.DEBUG)
-# fh.setFormatter(formatter)  # Add the formatter
-# logger.addHandler(fh)  # Add the handlers to the logger
-
-
 @dataclass()
 class ResponseParser:
     """Bash response parser"""
@@ -276,6 +269,18 @@ class Plinux:
 
     def is_enabled(self, name: str):
         return self.run_cmd(f'systemctl is-enabled {name}')
+
+    def get_pid(self, name: str):
+        """Get process pid
+
+        :param name: Process name
+        """
+
+        result = self.run_cmd(f'pidof {name}').stdout
+        try:
+            return int(result)
+        except TypeError as err:
+            raise err
 
     def get_netstat_info(self, params: str = ''):
         """Get netstat info

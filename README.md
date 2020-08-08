@@ -50,6 +50,9 @@ Some methods have "human commands" and aliases:
 ---
 
 ## Changelog
+##### 1.1.3 (08.08.2020)
+get_pid method added
+
 ##### 1.1.2 (25.04.2020)
 - send_cmd deprecated
 - fix password prompt in stderr
