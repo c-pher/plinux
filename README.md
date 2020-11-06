@@ -40,6 +40,15 @@ print(response.command)  # sudo -S -p '' -- sh -c 'systemctl stop myservicename.
 print(response.exited)  # 0
 ```
 
+#### SFTP usage:
+```python
+from plinux import Plinux
+
+tool = Plinux(host="ftp.test.local", username="bobby", password="qawsedrf")
+sftp = tool.sftp
+print(sftp.listdir())
+```
+
 #### Aliases
 Some methods have "human commands" and aliases:
 
@@ -50,6 +59,10 @@ Some methods have "human commands" and aliases:
 ---
 
 ## Changelog
+##### 1.1.4 (06.11.2020)
+- added 'sftp' property explicitly
+- 'cat', 'check_exists', 'get_json' now support sudo usage
+
 ##### 1.1.3 (08.08.2020)
 get_pid method added
 

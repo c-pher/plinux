@@ -295,7 +295,7 @@ class Plinux:
         return self.run_cmd(cmd_)
 
     # ----------- File and directory management ----------
-    def check_exists(self, path: str) -> bool:
+    def check_exists(self, path: str, sudo: bool = False) -> bool:
         r"""Check file and directory exists.
 
         For windows path: specify network path in row format or use escape symbol.
@@ -312,20 +312,20 @@ class Plinux:
         # Linux
         if '/' in path:
             cmd = f'test -e {path}'
-            response = self.run_cmd(cmd)
+            response = self.run_cmd(cmd, sudo=sudo)
             return response.ok
         # Windows
         elif '\\' in path:
             return os.path.exists(path)
         raise SyntaxError('Incorrect method usage. Check specified path.')
 
-    def cat_file(self, path: str):
-        return self.run_cmd(f'cat {path}')
+    def cat_file(self, path: str, sudo: bool = False):
+        return self.run_cmd(f'cat {path}', sudo=sudo)
 
-    def get_json(self, path: str, pprint: bool = False) -> dict:
+    def get_json(self, path: str, sudo: bool = False, pprint: bool = False) -> dict:
         """Read JSON file as string and pretty print it into console"""
 
-        file = self.cat_file(path)
+        file = self.cat_file(path, sudo=sudo)
         jsoned = json.loads(file.stdout)
         if pprint:
             print(json.dumps(jsoned, indent=4), sep='')
@@ -474,7 +474,11 @@ class Plinux:
     def count_files(self, path: str):
         return self.run_cmd(f'ls {path} | wc -l')
 
-    #  ----------- File transfer -----------
+    #  ----------- SFTP -----------
+    @property
+    def sftp(self):
+        return self._client(sftp=True)
+
     def upload(self, local: str, remote: str):
         r"""Upload file/dir to the host and check exists after.
 
@@ -485,21 +489,22 @@ class Plinux:
         :return: bool
         """
 
-        self._client(sftp=True).put(local, remote, confirm=True)
+        self.sftp.put(local, remote, confirm=True)
         logger.info(f'Uploaded {local} to {remote}')
         return self.exists(remote)
 
-    def download(self, remote: str, local: str) -> bool:
+    def download(self, remote: str, local: str, callback=None) -> bool:
         r"""Download a file from the current connection to the local filesystem and check exists after.
 
         Usage: tool.download('/home/user/python_tutorial.pdf', 'd:\dust\python_tutorial.pdf')
 
         :param remote: Remote file to download. May be absolute, or relative to the remote working directory.
         :param local: Local path to store downloaded file in, or a file-like object
+        :param callback: func(int, int)). Accepts the bytes transferred so far and the total bytes to be transferred
         :return: bool
         """
 
-        self._client(sftp=True).get(remote, local)
+        self.sftp.get(remote, local, callback=callback)
         logger.info(f'Downloaded {remote} to {local}')
         return self.exists(local)
 
