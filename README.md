@@ -49,6 +49,19 @@ sftp = tool.sftp
 print(sftp.listdir())
 ```
 
+#### SQLite3 usage:
+```python
+from plinux import Plinux
+
+client = Plinux(host="cdn1.test.local", username="bobby", password="qawsedrf")
+
+db_path = '/opt/ProductName/nxdb/StorageConfig.db'
+sql = 'select Data from DtoDataContainer'
+db = client.sqlite3(db_path, sql).json()
+print(db)  # {"Settings1": 1, "Settings2": 2...,"Settings10": 10}
+print(db['Setting1'])  # {"Settings1": 1}
+```
+
 #### Aliases
 Some methods have "human commands" and aliases:
 
