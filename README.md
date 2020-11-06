@@ -59,6 +59,9 @@ Some methods have "human commands" and aliases:
 ---
 
 ## Changelog
+##### 1.1.5 (07.11.2020)
+sqlite3 method added
+
 ##### 1.1.4 (06.11.2020)
 - added 'sftp' property explicitly
 - 'cat', 'check_exists', 'get_json' now support sudo usage

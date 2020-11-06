@@ -306,6 +306,7 @@ class Plinux:
         Usage: check_exists('/home/user/test.txt')
 
         :param path: Full path to file/directory
+        :param sudo:
         :return:
         """
 
@@ -549,6 +550,18 @@ class Plinux:
         """
 
         return self.run_cmd(f'pkill -9 -u {name}', sudo=True)
+
+    def sqlite3(self, db: str, sql: str, sudo: bool = False):
+        """Simple work with the SQLite. Can use ".json" in response.
+
+        :param db: DB path
+        :param sql: SQL request
+        :param sudo:
+        :return:
+        """
+
+        cmd = f'sqlite3 {db} "{sql}"'
+        return self.run_cmd(cmd, sudo=sudo)
 
     # Aliases
     ps = get_processes
