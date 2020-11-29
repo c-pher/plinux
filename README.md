@@ -72,6 +72,9 @@ Some methods have "human commands" and aliases:
 ---
 
 ## Changelog
+##### 1.1.6 (29.11.2020)
+sqlite3 method updated to accept external parameters like "-line -header"
+
 ##### 1.1.5 (07.11.2020)
 sqlite3 method added
 

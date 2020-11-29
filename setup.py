@@ -9,7 +9,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='plinux',
-    version='1.1.5',
+    version='1.1.6',
     packages=['plinux'],
     url='https://github.com/agegemon/plinux',
     license='GNU General Public License v3.0',

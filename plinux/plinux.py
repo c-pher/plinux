@@ -551,16 +551,17 @@ class Plinux:
 
         return self.run_cmd(f'pkill -9 -u {name}', sudo=True)
 
-    def sqlite3(self, db: str, sql: str, sudo: bool = False):
+    def sqlite3(self, db: str, sql: str, sudo: bool = False, params: str = ''):
         """Simple work with the SQLite. Can use ".json" in response.
 
         :param db: DB path
         :param sql: SQL request
+        :param params: i.e. "-line -header", "-csv"
         :param sudo:
         :return:
         """
 
-        cmd = f'sqlite3 {db} "{sql}"'
+        cmd = f'sqlite3 {db} "{sql}" {params}'
         return self.run_cmd(cmd, sudo=sudo)
 
     # Aliases
